@@ -122,3 +122,33 @@ drop table if exists stu;
 # 6.查看表结构
 # 格式：desc 数据表名称
 DESC stu;
+
+
+
+# ----------------------------------------案例三：DDL语句操作数据表（table）----------------------------------- #
+# 1.切库
+use day01;
+show tables;
+
+# 2.查看表结构
+desc stu;
+
+# 3.给stu表添加字段address varchar(20)
+# 格式：alter table 数据表名称 add 字段名 数据类型 [约束];
+alter table stu add address varchar(20) NOT NULL COMMENT '学生地址';
+
+
+# 4.修改字段，
+# 场景1：只修改数据类型和约束
+# 格式：alter table 数据表名称 modify 旧列名 新的数据类型 [新的约束];
+alter table stu modify address INT ;
+
+# 场景2：修改数据类型，约束，字段名
+# 格式：alter table 数据表名称 change 旧列名 新列名 数据类型 [新的约束];
+alter table stu change address addr VARCHAR(10) NOT NULL COMMENT '学生地址';
+
+# 5.删除字段
+# 格式：alter table 数据表名称 drop 字段名;
+alter table stu drop addr;
+
+
