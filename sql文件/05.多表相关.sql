@@ -87,7 +87,7 @@ select * from hero, kongfu;
 select * from hero cross join kongfu;
 SELECT * FROM hero, kongfu;
 
-c# 格式1显示链接：select 列名 from 表1 inner join 表2 on 表1.列名=表2.列名;
+# 格式1显示链接：select 列名 from 表1 inner join 表2 on 表1.列名=表2.列名;
 select * from hero inner join kongfu on hero.kongfu_id=kongfu.kid; # 查询结果等于两张表的笛卡尔积，即所有可能的组合。例如，表1有m行，表2有n行，则查询结果有m*n行。
 # 格式2隐式链接（推荐）：select 列名 from 表1, 表2 where 表1.列名=表2.列名;
 SELECT * FROM hero, kongfu WHERE hero.kongfu_id = kongfu.kid;
@@ -110,11 +110,74 @@ UNION DISTINCT  # 合并并去重，union all合并不去重
 SELECT * from hero as h right outer join kongfu as k on h.kongfu_id = k.kid;
 
 #------------------------案例6: 多表查询-子查询（subquery）------------------------#
+/*
+ 概述：
+    子查询：就是在某个SQL语句中嵌套另一个SQL语句，被嵌套的SQL语句称为子查询，也称为内层查询或内部查询，外层查询调用内层查询的结果。
+ 写法：
+    1. 子查询可以作为查询条件，也可以作为查询结果。
+    2. 子查询可以作为插入、更新、删除的值。
+    3. 子查询可以作为表名、列名。
+ */
 
+# 需求：查询价格最高的商品信息，只要商品名，价格，分类id即可。
+SELECT * from product;
+select pname, price, category_id from product WHERE price = (select max(price) from product);
+# 实际开发写法，连接查询
+SELECT
+    *
+FROM
+    product
+JOIN
+    (select max(price) as price from product) t1
+ON
+    product.price = t1.price;
 
+# case when语法
+# c001 -> 电脑，c002 -> 服装，c003 -> 化妆品，c004 -> 零食，c005->饮料，null -> 未知
+SELECT * from product;
 
+/*
+    case when语法：
+    格式1：通用写法，
+        case
+            when 条件1 then 结果1
+            when 条件2 then 结果2
+            ...
+            else 结果n
+        end [as 别名]
+    格式2：针对于格式1的语法糖要满足两点 -》 1.都是操作同一个字段 2.都是等于判断
+        case 字段
+            when 值1 then 结果1
+            when 值2 then 结果2
+            ...
+            else 结果n
+        end [as 别名]
+ */
 
+SELECT
+    *,
+    case
+        when category_id = 'c001' then '电脑'
+        when category_id = 'c002' then '服装'
+        when category_id = 'c003' then '化妆品'
+        when category_id = 'c004' then '零食'
+        when category_id = 'c005' then '饮料'
+        else '未知'
+    END as categrory_name
+from product;
 
+# 上述格式可以简化为
+SELECT
+    *,
+    case category_id
+        when 'c001' then '电脑'
+        when 'c002' then '服装'
+        when 'c003' then '化妆品'
+        when 'c004' then '零食'
+        when 'c005' then '饮料'
+        else '未知'
+    END as categrory_name
+from product;
 
 
 
