@@ -30,20 +30,20 @@ SHOW TABLES;
 
 # 建表，插入数据
 create table employee (empid int,ename varchar(20),dept_id int,salary decimal(10,2));
-
+TRUNCATE TABLE employee;
 insert into employee values(1,'刘备',10,5500.00);
 insert into employee values(2,'赵云',10,4500.00);
 insert into employee values(2,'张飞',10,3500.00);
 insert into employee values(2,'关羽',10,4500.00);
 
-insert into employee values(3,'曹操',20,19000.00);
-insert into employee values(4,'许褚',20,48000.00);
-insert into employee values(5,'张辽',20,45000.00);
+insert into employee values(3,'曹操',20,1900.00);
+insert into employee values(4,'许褚',20,4800.00);
+insert into employee values(5,'张辽',20,6500.00);
 insert into employee values(6,'徐晃',20,14500.00);
 
-insert into employee values(7,'孙权',30,34500.00);
-insert into employee values(8,'周瑜',30,30650.00);
-insert into employee values(9,'陆逊',30,73000.00);
+insert into employee values(7,'孙权',30,44500.00);
+insert into employee values(8,'周瑜',30,6500.00);
+insert into employee values(9,'陆逊',30,7500.00);
 
 
 # 查看数据
@@ -57,15 +57,41 @@ SELECT *, dept_id + 100 from employee;
 # 场景二：如何使用窗口函数
 SELECT
     *,
-    RANK() OVER (PARTITION BY dept_id ORDER BY salary DESC) as rn
+    # sum(salary) over(partition by dept_id) as total_sum
+    sum(salary) over(partition by dept_id order by salary desc) as total_sum
 FROM employee;
 
+# 场景三，分组排名：按照部门id分组，按照工资（salary）进行排名，降序。
+select *,
+       rank() over(PARTITION BY dept_id ORDER BY salary DESC ) as row_num,
+       dense_rank() over(PARTITION BY dept_id ORDER BY salary DESC ) as dense_row_num
+FROM employee;
 
+# 场景4：分组排名求TopN，需求找出每组工资最高的2人的信息(考虑并列)
+select *,
+       rank() over(PARTITION BY dept_id ORDER BY salary DESC ) as row_num
+FROM employee
+WHERE row_num <= 2;
 
+# 解决方案1：使用子查询
 
+SELECT *
+FROM (
+         select *,
+                rank() over(PARTITION BY dept_id ORDER BY salary DESC ) as row_num
+         FROM employee
+     ) as t1
+where row_num <= 2;
 
-
-
+# CTE公共表表达式
+with t1 as (
+         select *,
+                rank() over(PARTITION BY dept_id ORDER BY salary DESC ) as row_num
+         FROM employee
+     )
+select *
+from t1
+where row_num <= 2;
 
 
 
