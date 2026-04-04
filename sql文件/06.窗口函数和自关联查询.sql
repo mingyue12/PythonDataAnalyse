@@ -68,11 +68,12 @@ select *,
 FROM employee;
 
 # 场景4：分组排名求TopN，需求找出每组工资最高的2人的信息(考虑并列)
-select *,
-       rank() over(PARTITION BY dept_id ORDER BY salary DESC ) as row_num
-FROM employee
-WHERE row_num <= 2;
+# select *,
+#        rank() over(PARTITION BY dept_id ORDER BY salary DESC ) as row_num
+# FROM employee
+# WHERE row_num <= 2;
 
+# 无法直接在where子句中使用窗口函数
 # 解决方案1：使用子查询
 
 SELECT *
@@ -125,9 +126,17 @@ select * from t5;
 
 # 查表
 SHOW TABLES;
+SELECT * from areas;
+DROP TABLE areas;
 
+# 查看河南省的信息
+SELECT * from areas where title = '河南省';
 
+# 查看河南省所有的市
+select * from areas where pid = '410000';
 
+# 查看新乡市所有的县区
+SELECT * from areas WHERE pid = '410700';
 
 
 
